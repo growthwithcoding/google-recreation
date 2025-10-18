@@ -113,16 +113,24 @@ This project includes **6 well-documented JavaScript functions** in `script.js`.
 - Checks if query is empty or too short (< 3 characters)
 - Returns validation status with appropriate message
 
-**Future Integration:**
-- Attach to search form's submit event
-- Display error message if validation fails
-- Prevent form submission for invalid queries
-- Provide real-time feedback as user types
+**Current Implementation:**
+- **ACTIVELY USED** in search form submit event handler
+- Validates queries before calling `simulateSearch()`
+- Displays alert with validation message if query is invalid
+- Prevents search execution for empty or too-short queries
+- Integrated with DOMContentLoaded event listener
 
-**Example:**
+**Example with actual usage:**
 ```javascript
-const result = validateSearchQuery("cat");
-// Returns: { isValid: true, message: "Search query is valid!" }
+// From actual implementation in search form handler
+const query = searchInput.value;
+const validation = validateSearchQuery(query);
+
+if (!validation.isValid) {
+    alert(validation.message);  // Shows error to user
+    return;  // Prevents form submission
+}
+// Continue with search if valid...
 ```
 
 ---
@@ -131,7 +139,7 @@ const result = validateSearchQuery("cat");
 **Purpose:** Randomly selects a doodle from an array for "Doodle of the Day" feature
 
 **Parameters:**
-- `doodlesArray` (array): Array of doodle objects with name, date, and category
+- `doodlesArray` (array): Array of doodle objects with name, date, and image URL
 
 **Returns:**
 - Randomly selected doodle object, or null if array is empty
@@ -140,20 +148,33 @@ const result = validateSearchQuery("cat");
 - Checks if array is valid and not empty
 - Generates random index using `Math.random()`
 - Returns the doodle at that index
+- Logs the selected doodle name and date to console
 
-**Future Integration:**
-- Display featured doodle on page load
-- Implement "Surprise Me!" button
-- Rotate doodles daily using date-based randomization
-- Show different doodles to different users
+**Current Implementation:**
+- **ACTIVELY USED** with `recentGoogleDoodles` array containing 10 actual Google Doodles
+- Called by `displayRandomGoogleDoodle()` helper function on page load
+- Array includes real Google Doodle image URLs from google.com/logos/doodles/
+- Powers the random doodle display feature on the homepage
 
-**Example:**
+**Example with actual usage:**
 ```javascript
-const doodles = [
-  { name: "Earth Day", date: "April 22, 2024", category: "Environment" },
-  { name: "Olympics", date: "Feb 4, 2024", category: "Sports" }
+// Real array used in the project (10 Google Doodles with image URLs)
+const recentGoogleDoodles = [
+  {
+    name: "Celebrating Cherry Blossom Season",
+    image: "https://www.google.com/logos/doodles/2025/celebrating-cherry-blossom-season-copy-6753651837110757-2xa.gif",
+    date: "2025"
+  },
+  {
+    name: "Earth Day 2025",
+    image: "https://www.google.com/logos/doodles/2025/earth-day-2025-6753651837110746.2-2x.png",
+    date: "2025"
+  },
+  // ... 8 more doodles
 ];
-const featured = getRandomDoodle(doodles);
+
+const randomDoodle = getRandomDoodle(recentGoogleDoodles);
+// Returns: { name: "Earth Day 2025", image: "https://...", date: "2025" }
 ```
 
 ---
@@ -170,20 +191,23 @@ const featured = getRandomDoodle(doodles);
 **How it works:**
 - Iterates through search history array
 - Sums up character length of each query
-- Calculates average query length
-- Returns comprehensive statistics
+- Calculates average query length (rounded to 2 decimals)
+- Returns comprehensive statistics object
 
-**Future Integration:**
-- Display engagement metrics in user dashboard
-- Show "You've searched X characters today" message
-- Track user behavior for analytics
-- Provide personalized search insights
+**Current Implementation:**
+- **ACTIVELY USED** in search form submit handler
+- Called after each search to generate live statistics
+- Statistics displayed in search results UI with search count, total characters, and average length
+- Works in conjunction with localStorage-based search history
 
-**Example:**
+**Example with actual usage:**
 ```javascript
-const searches = ["cat videos", "weather today", "news"];
-const stats = calculateSearchCharacters(searches);
-// Returns: { totalCharacters: 29, averageLength: 9.67, searchCount: 3 }
+// From actual implementation - called after storing search
+const stats = calculateSearchCharacters(searchHistory);
+// Used to display in UI:
+// Total searches: 5
+// Total characters searched: 127
+// Average query length: 25.4 characters
 ```
 
 ---
@@ -204,22 +228,27 @@ const stats = calculateSearchCharacters(searches);
 - **Now allows duplicate entries** to accurately reflect total search statistics
 - Adds query to front of array (most recent first)
 - Limits array size to maxHistorySize
+- Logs actions to console for debugging
+
+**Current Implementation:**
+- **ACTIVELY USED** in search form submit handler
+- Integrates with localStorage for persistent storage across browser sessions
+- Loads search history from localStorage on page load
+- Saves updated history back to localStorage after each search
+- Powers the "View Recent Searches" feature
+- Works with `showSearchHistory()` and `clearSearchHistory()` helper functions
 
 **Recent Update (October 2025):**
 - Modified to allow duplicate search queries instead of removing them
 - This change enables more accurate search statistics and analytics tracking
 
-**Future Integration:**
-- Store in localStorage for persistence across sessions
-- Display as "Recent Searches" dropdown
-- Implement search suggestions/autocomplete
-- Allow users to clear history
-
-**Example:**
+**Example with actual usage:**
 ```javascript
-let history = ["cats", "dogs"];
-history = storeSearchQuery("birds", history, 5);
-// Returns: ["birds", "cats", "dogs"]
+// From actual implementation
+let searchHistory = JSON.parse(localStorage.getItem('searchHistory')) || [];
+searchHistory = storeSearchQuery(query, searchHistory, 10);
+localStorage.setItem('searchHistory', JSON.stringify(searchHistory));
+// History persists across page reloads and can be viewed/cleared by user
 ```
 
 ---
@@ -238,19 +267,30 @@ history = storeSearchQuery("birds", history, 5);
 - Uses switch statement to handle different actions
 - Opens, closes, or toggles modal based on action parameter
 - Returns new state and descriptive message
+- Logs actions to console for debugging
+
+**Current Status:**
+- **DEMONSTRATION FUNCTION ONLY** - Not actively integrated into the application
+- Serves as a learning example for state management patterns
+- Shows proper switch statement usage and object return values
+- Could be integrated with Bootstrap modals or custom popup components
 
 **Future Integration:**
 - Connect to Bootstrap modal events
 - Implement keyboard shortcuts (ESC to close)
 - Track modal interactions for analytics
 - Add custom animation effects
-- Manage multiple modals on the page
+- Manage multiple modals on the page (e.g., sign-in, settings, confirmations)
 
 **Example:**
 ```javascript
 let modalState = false;
 const result = toggleModal(modalState, "open");
 // Returns: { isVisible: true, action: "opened", message: "Modal opened" }
+
+// Can also toggle or close
+toggleModal(true, "close");  // Closes the modal
+toggleModal(false, "toggle"); // Opens since current state is false
 ```
 
 ---
@@ -276,24 +316,31 @@ const result = toggleModal(modalState, "open");
 - **Formatting:** Uses `toLocaleString()` to add comma separators
 - **Random search time:** Generates realistic time between 0.3-0.7 seconds
 
+**Current Implementation:**
+- **ACTIVELY USED** in search form submit handler
+- Called after query validation passes
+- Results displayed in search results UI showing:
+  - Formatted result count with commas
+  - Simulated search time
+  - Original query text
+- Provides realistic Google-like search experience without API calls
+
 **Recent Addition (October 2025):**
 - New function added to demonstrate realistic search result simulation
 - Uses sophisticated algorithm based on query characteristics
 - Prepares groundwork for future API integration
 
-**Future Integration:**
-- Connect to real search API (Google Custom Search, etc.)
-- Display actual search results on results page
-- Implement result ranking and filtering
-- Add search analytics and tracking
-
-**Example:**
+**Example with actual usage:**
 ```javascript
-const results = simulateSearch("cat");  // Short, common word
-// Returns: { resultCount: "3,245,000,000", searchTime: "0.52", query: "cat" }
+// From actual implementation - called in search handler
+const results = simulateSearch(query);
+// Display: About 3,245,000,000 results (0.52 seconds)
 
-const results2 = simulateSearch("web development tutorials for beginners");
-// Returns: { resultCount: "8,450,000", searchTime: "0.41", query: "web development..." }
+// Algorithm adapts to query complexity:
+simulateSearch("cat");  // → ~3 billion results
+simulateSearch("web development");  // → ~500 million results  
+simulateSearch("react hooks tutorial");  // → ~20 million results
+simulateSearch("advanced typescript generic constraints");  // → ~400,000 results
 ```
 
 ---
