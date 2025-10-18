@@ -62,7 +62,7 @@ This project utilizes **4 Bootstrap components** to create a polished, professio
 - **Features:**
   - Collapses into hamburger menu on mobile devices
   - Contains Home, About, and Contact links
-  - Includes Sign In button that triggers the modal
+  - Includes Sign In button that links to dedicated signin.html page
   - Uses Bootstrap's `.navbar-expand-lg` for responsive behavior
 
 ### 2. **Cards**
@@ -83,15 +83,15 @@ This project utilizes **4 Bootstrap components** to create a polished, professio
   - Only one section open at a time (Bootstrap's collapse behavior)
   - Accessible keyboard navigation
 
-### 4. **Modal**
-- **Purpose:** Sign-in dialog popup
-- **Why chosen:** Provides user authentication interface without leaving the page
+### 4. **Buttons & Form Controls**
+- **Purpose:** Interactive elements for user actions and navigation
+- **Why chosen:** Essential Bootstrap components for user interaction
 - **Features:**
-  - Centered popup overlay with backdrop
-  - Email and password input fields
-  - "Remember me" checkbox
-  - Close button and sign-in action button
-  - Triggered by "Sign In" button in navbar
+  - Primary and secondary button styles
+  - Form inputs with Bootstrap styling
+  - Responsive button behavior
+  - Sign-in button that navigates to dedicated signin.html page
+  - Search submission and "I'm Feeling Lucky" buttons
 
 ---
 
@@ -256,29 +256,44 @@ const result = toggleModal(modalState, "open");
 ---
 
 ### Function 6: `simulateSearch(query)`
-**Purpose:** Simulates a search operation and returns mock results
+**Purpose:** Simulates a search operation and returns mock results with realistic result counts
 
 **Parameters:**
 - `query` (string): The search term to simulate
 
 **Returns:**
-- Object containing search results with query, resultCount, and timestamp
+- Object containing:
+  - `resultCount` (string): Formatted number with commas (e.g., "4,230,500,000")
+  - `searchTime` (string): Simulated search time in seconds (e.g., "0.48")
+  - `query` (string): The original trimmed search query
 
-**How it works:**
-- Validates the search query
-- Generates mock search result count
-- Returns formatted result object with metadata
+**How it works - Intelligent Result Algorithm:**
+- **Short queries (≤5 characters):** Common words generate 1-5 billion results
+- **Medium queries (6-10 characters):** Generate 100-900 million results
+- **Longer queries (11-15 characters):** More specific, generate 10-90 million results
+- **Very specific queries (16+ characters):** Generate 100,000-1 million results
+- **Word count adjustment:** More words = fewer results (divided by word count / 2)
+- **Formatting:** Uses `toLocaleString()` to add comma separators
+- **Random search time:** Generates realistic time between 0.3-0.7 seconds
+
+**Recent Addition (October 2025):**
+- New function added to demonstrate realistic search result simulation
+- Uses sophisticated algorithm based on query characteristics
+- Prepares groundwork for future API integration
 
 **Future Integration:**
-- Connect to real search API
-- Display actual search results
+- Connect to real search API (Google Custom Search, etc.)
+- Display actual search results on results page
 - Implement result ranking and filtering
-- Add search analytics tracking
+- Add search analytics and tracking
 
 **Example:**
 ```javascript
-const results = simulateSearch("web development");
-// Returns: { query: "web development", resultCount: 1234, timestamp: "2025-10-18..." }
+const results = simulateSearch("cat");  // Short, common word
+// Returns: { resultCount: "3,245,000,000", searchTime: "0.52", query: "cat" }
+
+const results2 = simulateSearch("web development tutorials for beginners");
+// Returns: { resultCount: "8,450,000", searchTime: "0.41", query: "web development..." }
 ```
 
 ---
@@ -337,11 +352,18 @@ google-homepage-recreation/
 - Animation keyframes
 
 **script.js**
-- 6 well-documented JavaScript functions
+- 6 well-documented core JavaScript functions for demonstration
+- Additional helper functions for enhanced interactivity:
+  - `displayRandomGoogleDoodle()` - Displays random doodle from curated array
+  - `showSearchHistory()` - Shows user's recent searches in modal-style display
+  - `clearSearchHistory()` - Clears search history from localStorage
+  - Event handlers for search form, "I'm Feeling Lucky" button, and page load
 - Each function uses variables, arrays, strings, and control structures
 - Commented demo code showing usage examples
 - Functions demonstrate: validation, randomization, calculations, data management, state control, and search simulation
 - Updated `storeSearchQuery()` to allow duplicate entries for accurate statistics tracking
+- localStorage integration for persistent search history across sessions
+- Array of 10 recent Google Doodles with direct image URLs
 
 ---
 
@@ -419,7 +441,7 @@ validateSearchQuery("test query");
 - [x] **Component 1:** Navbar (responsive navigation)
 - [x] **Component 2:** Cards (featured doodles display)
 - [x] **Component 3:** Accordion (FAQ section)
-- [x] **Bonus Component 4:** Modal (sign-in popup)
+- [x] **Bonus Component 4:** Buttons & Form Controls (interactive elements)
 
 ### 4-6 JavaScript Functions ✓
 - [x] **Function 1:** validateSearchQuery() - input validation
