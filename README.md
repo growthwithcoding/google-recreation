@@ -17,8 +17,38 @@ This project recreates the clean, minimalist design of Google's homepage while i
 - ✅ Bootstrap 5 components and utilities
 - ✅ Custom CSS styling for Google-like aesthetic
 - ✅ Clean, organized, and well-commented code
-- ✅ 5 standalone JavaScript functions demonstrating core programming concepts
+- ✅ 6 standalone JavaScript functions demonstrating core programming concepts
 - ✅ Features actual Google Doodle images (Earth Day 2024, International Women's Day 2024, Winter Olympics 2024)
+- ✅ Dedicated sign-in page with Google-authentic design
+- ✅ Updated navbar branding highlighting Doodle focus
+
+## 🆕 Recent Updates
+
+### October 2025 Updates
+
+**Navigation Enhancement:**
+- Updated navbar brand from "Google Recreation" to "Google Recreation- Doodle Highlight" to better reflect the project's focus on showcasing Google Doodles
+- Converted sign-in button to navigate to dedicated signin.html page instead of modal popup for improved user experience
+
+**New Sign-In Page (signin.html):**
+- Created standalone sign-in page matching Google's authentic design
+- Includes Google SVG logo for professional appearance
+- Email input field with proper validation
+- "Forgot email?" and "Learn more about Guest mode" links
+- "Create account" button that links back to index.html
+- Responsive footer with language selector and Help/Privacy/Terms links
+- Bootstrap 5 styling with custom Google-like CSS
+- JavaScript form handler with demo alert functionality
+
+**JavaScript Function Updates:**
+- Modified `storeSearchQuery()` function to allow duplicate entries in search history
+- Added comment explaining that duplicates now reflect actual search statistics for more accurate analytics
+- Added new `simulateSearch()` function for enhanced search functionality demonstration
+
+**File Structure Changes:**
+- Added signin.html as new standalone page
+- Modified index.html to link to sign-in page
+- Updated script.js with improved search history tracking
 
 ---
 
@@ -67,7 +97,7 @@ This project utilizes **4 Bootstrap components** to create a polished, professio
 
 ## 💻 JavaScript Functions
 
-This project includes **5 well-documented JavaScript functions** in `script.js`. These functions are standalone (not integrated into the HTML) but demonstrate practical functionality that could be added to enhance the Google homepage experience.
+This project includes **6 well-documented JavaScript functions** in `script.js`. These functions are standalone (not integrated into the HTML) but demonstrate practical functionality that could be added to enhance the Google homepage experience.
 
 ### Function 1: `validateSearchQuery(query)`
 **Purpose:** Validates user search input before submission
@@ -171,9 +201,13 @@ const stats = calculateSearchCharacters(searches);
 
 **How it works:**
 - Trims whitespace from new query
-- Removes duplicates (keeps most recent)
+- **Now allows duplicate entries** to accurately reflect total search statistics
 - Adds query to front of array (most recent first)
 - Limits array size to maxHistorySize
+
+**Recent Update (October 2025):**
+- Modified to allow duplicate search queries instead of removing them
+- This change enables more accurate search statistics and analytics tracking
 
 **Future Integration:**
 - Store in localStorage for persistence across sessions
@@ -221,15 +255,51 @@ const result = toggleModal(modalState, "open");
 
 ---
 
+### Function 6: `simulateSearch(query)`
+**Purpose:** Simulates a search operation and returns mock results
+
+**Parameters:**
+- `query` (string): The search term to simulate
+
+**Returns:**
+- Object containing search results with query, resultCount, and timestamp
+
+**How it works:**
+- Validates the search query
+- Generates mock search result count
+- Returns formatted result object with metadata
+
+**Future Integration:**
+- Connect to real search API
+- Display actual search results
+- Implement result ranking and filtering
+- Add search analytics tracking
+
+**Example:**
+```javascript
+const results = simulateSearch("web development");
+// Returns: { query: "web development", resultCount: 1234, timestamp: "2025-10-18..." }
+```
+
+---
+
 ## 📁 Project Structure
 
 ```
 google-homepage-recreation/
 │
 ├── index.html          # Main HTML file with Bootstrap structure
+├── signin.html         # Dedicated sign-in page with Google-authentic design
 ├── style.css           # Custom CSS for styling and responsive design
 ├── script.js           # JavaScript functions (standalone, for practice)
-└── README.md           # This file - project documentation
+├── README.md           # This file - project documentation
+└── images/             # Directory containing Google Doodle images
+    ├── CTDoodle.png
+    ├── earth-day-2024-6753651837110453-2xa.gif
+    ├── halloween23.png
+    ├── international-womens-day-2024-6753651837110196-2x.png
+    ├── new-years-eve-2024-6753651837110349-2xa.gif
+    └── WinterOlympics2024.avif
 ```
 
 ### File Descriptions
@@ -237,14 +307,26 @@ google-homepage-recreation/
 **index.html**
 - Complete HTML structure with semantic markup
 - Bootstrap 5 CDN links for CSS and JavaScript
-- Responsive navigation bar
+- Responsive navigation bar with updated "Doodle Highlight" branding
 - Hero section with Google logo and search form
 - Two input types: text (search) and email (newsletter signup)
 - Cards section for featured doodles
 - Table section with doodle archive (5 entries)
 - Accordion FAQ section
-- Modal for sign-in functionality
+- Sign-in button now links to dedicated signin.html page
 - Footer with links
+
+**signin.html** *(New)*
+- Standalone sign-in page matching Google's authentic design
+- Google SVG logo for brand consistency
+- Email input form with validation
+- "Forgot email?" functionality link
+- Guest mode information and learn more link
+- "Create account" button linking back to main page
+- Responsive footer with language selector
+- Help, Privacy, and Terms links
+- Custom Google-style CSS (embedded in file)
+- JavaScript form handler with demo functionality
 
 **style.css**
 - Custom styles to enhance Bootstrap components
@@ -255,10 +337,11 @@ google-homepage-recreation/
 - Animation keyframes
 
 **script.js**
-- 5 well-documented JavaScript functions
+- 6 well-documented JavaScript functions
 - Each function uses variables, arrays, strings, and control structures
 - Commented demo code showing usage examples
-- Functions demonstrate: validation, randomization, calculations, data management, and state control
+- Functions demonstrate: validation, randomization, calculations, data management, state control, and search simulation
+- Updated `storeSearchQuery()` to allow duplicate entries for accurate statistics tracking
 
 ---
 
@@ -338,12 +421,13 @@ validateSearchQuery("test query");
 - [x] **Component 3:** Accordion (FAQ section)
 - [x] **Bonus Component 4:** Modal (sign-in popup)
 
-### 4-5 JavaScript Functions ✓
+### 4-6 JavaScript Functions ✓
 - [x] **Function 1:** validateSearchQuery() - input validation
 - [x] **Function 2:** getRandomDoodle() - random selection from array
 - [x] **Function 3:** calculateSearchCharacters() - statistics calculation
-- [x] **Function 4:** storeSearchQuery() - array management
+- [x] **Function 4:** storeSearchQuery() - array management (updated to allow duplicates)
 - [x] **Function 5:** toggleModal() - state management
+- [x] **Function 6:** simulateSearch() - search simulation and mock results
 - [x] All functions use variables, arrays, strings, and control structures
 - [x] Functions are in separate JS file with detailed comments
 
@@ -455,6 +539,18 @@ Created as part of a web development coding assignment to demonstrate proficienc
 
 ---
 
-**Last Updated:** October 2025
+## 📅 Change Log
+
+### October 18, 2025
+- ✅ Created dedicated `signin.html` page with Google-authentic design
+- ✅ Updated navbar branding to "Google Recreation- Doodle Highlight"
+- ✅ Modified sign-in button to navigate to signin.html instead of modal
+- ✅ Enhanced `storeSearchQuery()` function to allow duplicate entries for better analytics
+- ✅ Added `simulateSearch()` function for search functionality demonstration
+- ✅ Updated README with comprehensive documentation of all changes
+
+---
+
+**Last Updated:** October 18, 2025
 
 **Technologies:** HTML5 | CSS3 | JavaScript ES6 | Bootstrap 5.3.2

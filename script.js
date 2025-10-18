@@ -209,10 +209,8 @@ function storeSearchQuery(newQuery, existingHistory = [], maxHistorySize = 10) {
     // Create a copy of existing history to avoid mutating the original
     let updatedHistory = [...existingHistory];
     
-    // Remove the query if it already exists (to avoid duplicates)
-    updatedHistory = updatedHistory.filter(query => query !== trimmedQuery);
-    
     // Add the new query to the beginning of the array (most recent first)
+    // NOTE: We now allow duplicates so statistics accurately reflect total searches
     updatedHistory.unshift(trimmedQuery);
     
     // Limit the history size to maxHistorySize
@@ -405,15 +403,192 @@ function simulateSearch(query) {
     };
 }
 
+// ==================== RANDOM DOODLE FUNCTIONALITY ====================
+/**
+ * Array of recent Google Doodle images from https://doodles.google/
+ * These are actual Google Doodles that can be embedded
+ */
+const recentGoogleDoodles = [
+    {
+        name: "Celebrating Cherry Blossom Season",
+        image: "https://www.google.com/logos/doodles/2025/celebrating-cherry-blossom-season-copy-6753651837110757-2xa.gif",
+        date: "2025"
+    },
+    {
+        name: "NBA Playoffs 2025",
+        image: "https://www.google.com/logos/doodles/2025/nba-playoffs-2025-am-6753651837110780.2-2xa.gif",
+        date: "2025"
+    },
+    {
+        name: "Celebrating House Music",
+        image: "https://www.google.com/logos/doodles/2025/celebrating-house-music-6753651837110601.2-2xa.gif",
+        date: "2025"
+    },
+    {
+        name: "Celebrating the Appalachian Trail",
+        image: "https://www.google.com/logos/doodles/2023/celebrating-the-appalachian-trail-6753651837110071.2-2xa.gif",
+        date: "2023"
+    },
+    {
+        name: "Earth Day 2025",
+        image: "https://www.google.com/logos/doodles/2025/earth-day-2025-6753651837110746.2-2x.png",
+        date: "2025"
+    },
+    {
+        name: "US Teacher Appreciation Day 2025",
+        image: "https://www.google.com/logos/doodles/2025/us-teacher-appreciation-day-2025-6753651837110735.2-2x.png",
+        date: "2025"
+    },
+    {
+        name: "New Year's Day 2025",
+        image: "https://www.google.com/logos/doodles/2025/new-years-day-2025-6753651837110593-2xa.gif",
+        date: "2025"
+    },
+    {
+        name: "Halloween 2024",
+        image: "https://www.google.com/logos/doodles/2024/halloween-2024-6753651837110311.2-2xa.gif",
+        date: "2024"
+    },
+    {
+        name: "Fourth of July 2025",
+        image: "https://www.google.com/logos/doodles/2025/fourth-of-july-2025-6753651837110704-2x.png",
+        date: "2025"
+    },
+    {
+        name: "Mid-Autumn Festival 2025",
+        image: "https://www.google.com/logos/doodles/2025/mid-autumn-festival-2025-6753651837110706-2xa.gif",
+        date: "2025"
+    }
+];
+
+/**
+ * Displays a random Google Doodle from the recent doodles array
+ */
+function displayRandomGoogleDoodle() {
+    const randomDoodle = getRandomDoodle(recentGoogleDoodles);
+    
+    if (randomDoodle) {
+        const doodleContainer = document.getElementById('randomDoodleDisplay');
+        
+        if (doodleContainer) {
+            // Update with new random doodle
+            doodleContainer.innerHTML = `
+                <div class="text-center">
+                    <img src="${randomDoodle.image}" 
+                         alt="${randomDoodle.name}" 
+                         class="img-fluid mb-3"
+                         style="max-height: 200px; max-width: 100%;">
+                    <h5>${randomDoodle.name}</h5>
+                    <p class="text-muted">${randomDoodle.date}</p>
+                </div>
+            `;
+            
+            // Add fade-in effect
+            doodleContainer.style.opacity = '0';
+            setTimeout(() => {
+                doodleContainer.style.transition = 'opacity 0.5s';
+                doodleContainer.style.opacity = '1';
+            }, 50);
+        }
+    }
+}
+
+// ==================== SEARCH HISTORY DISPLAY ====================
+/**
+ * Displays the user's recent search history in an alert/modal
+ */
+function showSearchHistory() {
+    const history = JSON.parse(localStorage.getItem('searchHistory')) || [];
+    
+    if (history.length === 0) {
+        alert('No search history yet. Start searching to build your history!');
+        return;
+    }
+    
+    let historyHTML = '<div style="text-align: left; max-width: 400px;">';
+    historyHTML += '<h6 style="margin-bottom: 10px;"><i class="bi bi-clock-history"></i> Recent Searches (Most Recent First)</h6>';
+    historyHTML += '<ol style="padding-left: 20px; margin: 0;">';
+    
+    history.forEach(query => {
+        historyHTML += `<li style="margin: 5px 0;">${query}</li>`;
+    });
+    
+    historyHTML += '</ol>';
+    historyHTML += '<div style="margin-top: 15px; text-align: center;">';
+    historyHTML += '<button class="btn btn-sm btn-danger" onclick="clearSearchHistory()">Clear History</button>';
+    historyHTML += '</div>';
+    historyHTML += '</div>';
+    
+    // Create a custom modal-like display
+    const modal = document.createElement('div');
+    modal.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 9999;';
+    modal.innerHTML = `
+        <div style="background: white; padding: 30px; border-radius: 8px; max-width: 500px; position: relative;">
+            <button onclick="this.parentElement.parentElement.remove()" style="position: absolute; top: 10px; right: 10px; border: none; background: none; font-size: 24px; cursor: pointer;">&times;</button>
+            ${historyHTML}
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    
+    // Close modal when clicking outside
+    modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+            modal.remove();
+        }
+    });
+}
+
+/**
+ * Clears the user's search history from localStorage
+ */
+function clearSearchHistory() {
+    if (confirm('Are you sure you want to clear your search history?')) {
+        localStorage.removeItem('searchHistory');
+        alert('Search history cleared!');
+        // Remove any open modals
+        document.querySelectorAll('div[style*="z-index: 9999"]').forEach(el => el.remove());
+    }
+}
+
 // ==================== SEARCH FORM EVENT HANDLER ====================
 /**
  * Initialize search functionality when the page loads
  */
 document.addEventListener('DOMContentLoaded', function() {
+    // Display a random doodle on page load
+    displayRandomGoogleDoodle();
+    
+    // Add event listener to random doodle button
+    const refreshBtn = document.getElementById('refreshDoodleBtn');
+    if (refreshBtn) {
+        refreshBtn.addEventListener('click', displayRandomGoogleDoodle);
+    }
+    
+    // Add event listener to "I'm Feeling Lucky" button
+    const luckyBtn = document.querySelector('.btn-light:nth-of-type(2)');
+    if (luckyBtn) {
+        luckyBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const query = document.getElementById('searchInput').value.trim();
+            if (query) {
+                // Open Google's "I'm Feeling Lucky" search in new window
+                const luckyUrl = `https://www.google.com/search?q=${encodeURIComponent(query)}&btnI=1`;
+                window.open(luckyUrl, '_blank');
+            } else {
+                alert('Please enter a search term first!');
+            }
+        });
+    }
+    
     const searchForm = document.querySelector('.search-form');
     const searchInput = document.getElementById('searchInput');
     const searchResults = document.getElementById('searchResults');
     const resultsText = document.getElementById('resultsText');
+    
+    // Load search history from localStorage
+    let searchHistory = JSON.parse(localStorage.getItem('searchHistory')) || [];
+    console.log('Initial search history loaded:', searchHistory);
     
     // Handle form submission
     searchForm.addEventListener('submit', function(e) {
@@ -433,20 +608,36 @@ document.addEventListener('DOMContentLoaded', function() {
         // Simulate the search
         const results = simulateSearch(query);
         
-        // Display results
+        console.log('Before storing - searchHistory:', searchHistory);
+        
+        // Store the search query in history and persist to localStorage
+        searchHistory = storeSearchQuery(query, searchHistory, 10);
+        console.log('After storing - searchHistory:', searchHistory);
+        
+        localStorage.setItem('searchHistory', JSON.stringify(searchHistory));
+        console.log('Saved to localStorage:', JSON.parse(localStorage.getItem('searchHistory')));
+        
+        // Calculate search statistics
+        const stats = calculateSearchCharacters(searchHistory);
+        console.log('Statistics calculated:', stats);
+        
+        // Display results with statistics
         resultsText.innerHTML = `
             <strong>Searched for:</strong> "${results.query}"<br>
             About <strong>${results.resultCount}</strong> results (${results.searchTime} seconds)
+            <div class="mt-3 p-3 bg-light rounded">
+                <h6 class="mb-2"><i class="bi bi-bar-chart"></i> Your Search Statistics</h6>
+                <small class="d-block">Total searches: <strong>${stats.searchCount}</strong></small>
+                <small class="d-block">Total characters searched: <strong>${stats.totalCharacters}</strong></small>
+                <small class="d-block">Average query length: <strong>${stats.averageLength} characters</strong></small>
+                <button class="btn btn-sm btn-outline-secondary mt-2" onclick="showSearchHistory()">
+                    <i class="bi bi-clock-history"></i> View Recent Searches
+                </button>
+            </div>
         `;
         
         // Show the results container
         searchResults.style.display = 'block';
-        
-        // Store the search query in history
-        if (typeof storeSearchQuery === 'function') {
-            // Note: This stores in memory only. To persist, would need localStorage
-            storeSearchQuery(query);
-        }
         
         console.log(`Search performed: "${query}" - ${results.resultCount} results in ${results.searchTime}s`);
     });
